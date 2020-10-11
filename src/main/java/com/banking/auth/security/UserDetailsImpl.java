@@ -38,7 +38,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	public static UserDetailsImpl build(UserDetailsEntityDTO user) {
 		List<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new SimpleGrantedAuthority("user"));
+		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
 		return new UserDetailsImpl(
 				user.getId(), 
