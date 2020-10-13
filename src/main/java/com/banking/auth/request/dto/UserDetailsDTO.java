@@ -7,8 +7,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@Builder
-@ToString
 public class UserDetailsDTO {
 
 	private String firstName;

@@ -66,10 +66,10 @@ public class UserDetailsImpl implements UserDetails {
 		return password;
 	}
 
-	
-	public String getUserName() {
-		return userName;
-	}
+//	
+//	public String getUserName() {
+//		return userName;
+//	}
 
 	@Override
 	public boolean isAccountNonExpired() {

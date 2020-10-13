@@ -1,5 +1,7 @@
 package com.banking.auth.controller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +23,12 @@ import com.banking.auth.security.jwt.JwtUtils;
 
 import io.swagger.annotations.ApiOperation;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
+	private Log log = LogFactory.getLog(AuthenticationController.class);
+	
 	@Autowired
 	AuthenticationManager authenticationManager;
 
@@ -46,7 +48,8 @@ public class AuthenticationController {
 			consumes="application/json",produces="application/json")
 	@ApiOperation(value = "Login to bank account")
 	public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-
+		log.info("Authenticating user login");
+		log.debug("Authenticating user login for user -"+loginRequest.getUsername());
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -54,9 +57,9 @@ public class AuthenticationController {
 		String jwt = jwtUtils.generateJwtToken(authentication);
 		
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
-		
-
-		return ResponseEntity.ok(new JwtResponse(jwt, 
+		log.info("Exting after user authentication");
+		log.debug("Exting after user authentication fot user -"+loginRequest.getUsername());
+		return ResponseEntity.ok(new JwtResponse(jwt,
 												 userDetails.getId(), 
 												 userDetails.getUsername(), 
 												 userDetails.getEmail()));

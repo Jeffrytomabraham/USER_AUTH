@@ -31,6 +31,8 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/banking/user")
 public class CreateUserController {
 	
+	private static final String AUTHORIZATION = "Authorization";
+	
 	@Autowired
 	RestTemplate restTemplate;
 	
@@ -41,7 +43,7 @@ public class CreateUserController {
 	@ApiOperation(value = "Create customer account")
 	public @ResponseBody ResponseEntity<?> createUserAccount(@RequestHeader (value="Authorization") String authorization,@RequestBody UserDetailsDTO userDetailsDTO){
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", authorization);
+		headers.add(AUTHORIZATION, authorization);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<Object> entity = new HttpEntity<Object>(userDetailsDTO,headers); 
 	    try { 
@@ -49,12 +51,8 @@ public class CreateUserController {
 	        Object accountDetailsDTO= restTemplate.exchange(generateURI+"/create/account", HttpMethod.POST, entity,Object.class).getBody();
 	        return new ResponseEntity<>(accountDetailsDTO,HttpStatus.OK);
 		} catch (HttpStatusCodeException ex) {
-	    	ErrorResponse errorResponse = new ErrorResponse();
-	    	JSONObject jsonObject = new JSONObject(ex.getResponseBodyAsString());
-        	JSONObject errorFromApi = jsonObject.getJSONObject("errorResponse");
-        	errorResponse.setErrorCode(errorFromApi.getString("errorCode"));
-        	errorResponse.setMessage(errorFromApi.getString("message"));
-        	return new ResponseEntity<>(errorResponse,HttpStatus.valueOf(ex.getRawStatusCode()));
+			ErrorResponse errorResponse = getErrorMessage(ex.getResponseBodyAsString());
+			return new ResponseEntity<>(errorResponse,HttpStatus.valueOf(ex.getRawStatusCode()));
 		}
 	}
 	
@@ -62,7 +60,7 @@ public class CreateUserController {
 	@ApiOperation(value = "Create another customer account")
 	public @ResponseBody ResponseEntity<?> addUserAccount(@RequestHeader (value="Authorization") String authorization,@RequestBody AddAccountDTO addAccountDTO){
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", authorization);
+		headers.add(AUTHORIZATION, authorization);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<Object> entity = new HttpEntity<Object>(addAccountDTO,headers); 
 	    try {    
@@ -70,12 +68,17 @@ public class CreateUserController {
 	        Object accountDetailsDTO= restTemplate.exchange(generateURI+"/add/account", HttpMethod.POST, entity,Object.class).getBody();
 	        return new ResponseEntity<>(accountDetailsDTO,HttpStatus.OK);
 		} catch (HttpStatusCodeException ex) {
-	    	ErrorResponse errorResponse = new ErrorResponse();
-	    	JSONObject jsonObject = new JSONObject(ex.getResponseBodyAsString());
-        	JSONObject errorFromApi = jsonObject.getJSONObject("errorResponse");
-        	errorResponse.setErrorCode(errorFromApi.getString("errorCode"));
-        	errorResponse.setMessage(errorFromApi.getString("message"));
+	    	ErrorResponse errorResponse = getErrorMessage(ex.getResponseBodyAsString());
         	return new ResponseEntity<>(errorResponse,HttpStatus.valueOf(ex.getRawStatusCode()));
 		}
+	}
+
+	private ErrorResponse getErrorMessage(String message){
+		ErrorResponse errorResponse = new ErrorResponse();
+		JSONObject jsonObject = new JSONObject(message);
+		JSONObject errorFromApi = jsonObject.getJSONObject("errorResponse");
+		errorResponse.setErrorCode(errorFromApi.getString("errorCode"));
+		errorResponse.setMessage(errorFromApi.getString("message"));
+		return errorResponse;
 	}
 }
