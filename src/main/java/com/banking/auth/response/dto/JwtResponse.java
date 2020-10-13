@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class JwtResponse {
 
-	private String jwt;
+	private String SessionToken;
 	private String id;
 	private String username;
 	private String email;

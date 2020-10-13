@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreditRequestDTO {
+public class AddAccountDTO {
 
-	private String username;
-	private String accountNumber;
+	private String userName;
+	private String accountType;
 	private double creditAmount;
 }
