@@ -76,7 +76,7 @@ public class CreateUserController {
 	private ErrorResponse getErrorMessage(String message){
 		ErrorResponse errorResponse = new ErrorResponse();
 		JSONObject jsonObject = new JSONObject(message);
-		JSONObject errorFromApi = jsonObject.getJSONObject("error");
+		JSONObject errorFromApi = jsonObject.getJSONObject("errorResponse");
 		errorResponse.setErrorCode(errorFromApi.getString("errorCode"));
 		errorResponse.setMessage(errorFromApi.getString("message"));
 		return errorResponse;
