@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.*;
+import org.springframework.lang.Nullable;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,6 +22,8 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.NestedServletException;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -67,18 +70,43 @@ public class BankingOperationsControllerTest {
     @Test
     public void testCreditOperation_RestTemplateThrowsRestClientException() throws Exception {
         final CreditRequestDTO creditRequestDTO = new CreditRequestDTO();
+        HttpHeaders headers = new HttpHeaders();
+        String errorMessage = "{\"firstName\":null,\"lastName\":null,\"userName\":null,\"dob\":null,\"age\":0,\"email\":null,\"address1\":null,\"address2\":null,\"postalCode\":null,\"country\":null,\"city\":null,\"phone\":null,\"accounts\":null,\"error\":{\"errorCode\":\"INVALID_USER\",\"message\":\"User not found\"}}";
+        HttpStatusCodeException httpst = new HttpStatusCodeException(HttpStatus.BAD_REQUEST,"",
+        null,null,null) {
+            @Override
+            public HttpStatus getStatusCode() {
+                return HttpStatus.BAD_REQUEST;
+            }
 
-        when(bankingOperationsControllerUnderTest.restTemplate.exchange(eq("nullnull/credit"),eq(HttpMethod.POST), any(), eq(Object.class))).thenThrow(RestClientResponseException.class);
+            @Override
+            public int getRawStatusCode() {
+                return 400;
+            }
 
-        Exception exception = assertThrows(NestedServletException.class, () -> {
-        	MvcResult result1 = mockMvc.perform( MockMvcRequestBuilders
+            @Override
+            public String getStatusText() {
+                return "400 BAD_REQUEST";
+            }
+            @Override
+            public String getResponseBodyAsString() {
+                return errorMessage;
+            }
+
+            @Override
+            public String getMessage() {
+                return errorMessage;
+            }
+        };
+
+        when(bankingOperationsControllerUnderTest.restTemplate.exchange(eq("nullnull/credit"),eq(HttpMethod.POST), any(), eq(Object.class))).thenThrow(httpst);
+        MvcResult result1 = mockMvc.perform( MockMvcRequestBuilders
                     .post("/banking/operations/credit")
                     .header("Authorization","Bearer okdskdskdo")
                     .content(asJsonString(creditRequestDTO))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)).andReturn();
-        });
-        
+        assertNotNull(result1);
    }
 
     @Test
@@ -99,20 +127,46 @@ public class BankingOperationsControllerTest {
     }
 
     @Test
-    public void testDebitOperation_RestTemplateThrowsRestClientException() {
+    public void testDebitOperation_RestTemplateThrowsRestClientException() throws Exception{
 
         DebitRequestDTO debitRequestDTO = new DebitRequestDTO();
+        HttpHeaders headers = new HttpHeaders();
+        String errorMessage = "{\"firstName\":null,\"lastName\":null,\"userName\":null,\"dob\":null,\"age\":0,\"email\":null,\"address1\":null,\"address2\":null,\"postalCode\":null,\"country\":null,\"city\":null,\"phone\":null,\"accounts\":null,\"error\":{\"errorCode\":\"INVALID_USER\",\"message\":\"User not found\"}}";
+        HttpStatusCodeException httpst = new HttpStatusCodeException(HttpStatus.BAD_REQUEST,"",
+                null,null,null) {
+            @Override
+            public HttpStatus getStatusCode() {
+                return HttpStatus.BAD_REQUEST;
+            }
 
-        when(bankingOperationsControllerUnderTest.restTemplate.exchange(eq("nullnull/credit"),eq(HttpMethod.POST), any(), eq(Object.class))).thenThrow(RestClientResponseException.class);
+            @Override
+            public int getRawStatusCode() {
+                return 400;
+            }
 
-        Exception exception = assertThrows(NestedServletException.class, () -> {
-            MvcResult result1 = mockMvc.perform( MockMvcRequestBuilders
+            @Override
+            public String getStatusText() {
+                return "400 BAD_REQUEST";
+            }
+            @Override
+            public String getResponseBodyAsString() {
+                return errorMessage;
+            }
+
+            @Override
+            public String getMessage() {
+                return errorMessage;
+            }
+        };
+        when(bankingOperationsControllerUnderTest.restTemplate.exchange(eq("nullnull/debit"),eq(HttpMethod.POST), any(), eq(Object.class))).thenThrow(httpst);
+
+        MvcResult result1 = mockMvc.perform( MockMvcRequestBuilders
                     .post("/banking/operations/debit")
                     .header("Authorization","Bearer okdskdskdo")
                     .content(asJsonString(debitRequestDTO))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)).andReturn();
-        });
+        assertNotNull(result1);
     }
 
     @Test
@@ -133,21 +187,47 @@ public class BankingOperationsControllerTest {
     }
 
     @Test
-    public void testAccountDetails_RestTemplateThrowsRestClientException() {
+    public void testAccountDetails_RestTemplateThrowsRestClientException() throws Exception{
 
         final ViewAccountDTO viewAccountDTO = new ViewAccountDTO();
 
-        when(bankingOperationsControllerUnderTest.restTemplate.exchange(eq("url"), eq(HttpMethod.GET), eq(new HttpEntity<>(null)), eq(Object.class), any(Object.class))).thenThrow(RestClientResponseException.class);
-        when(bankingOperationsControllerUnderTest.restTemplate.exchange(eq("nullnull/credit"),eq(HttpMethod.POST), any(), eq(Object.class))).thenThrow(RestClientException.class);
+        HttpHeaders headers = new HttpHeaders();
+        String errorMessage = "{\"firstName\":null,\"lastName\":null,\"userName\":null,\"dob\":null,\"age\":0,\"email\":null,\"address1\":null,\"address2\":null,\"postalCode\":null,\"country\":null,\"city\":null,\"phone\":null,\"accounts\":null,\"error\":{\"errorCode\":\"INVALID_USER\",\"message\":\"User not found\"}}";
+        HttpStatusCodeException httpst = new HttpStatusCodeException(HttpStatus.BAD_REQUEST,"",
+                null,null,null) {
+            @Override
+            public HttpStatus getStatusCode() {
+                return HttpStatus.BAD_REQUEST;
+            }
 
-        Exception exception = assertThrows(NestedServletException.class, () -> {
-            MvcResult result1 = mockMvc.perform( MockMvcRequestBuilders
+            @Override
+            public int getRawStatusCode() {
+                return 400;
+            }
+
+            @Override
+            public String getStatusText() {
+                return "400 BAD_REQUEST";
+            }
+            @Override
+            public String getResponseBodyAsString() {
+                return errorMessage;
+            }
+
+            @Override
+            public String getMessage() {
+                return errorMessage;
+            }
+        };
+        when(bankingOperationsControllerUnderTest.restTemplate.exchange(eq("nullnull/account/details"),eq(HttpMethod.POST), any(), eq(Object.class))).thenThrow(httpst);
+
+        MvcResult result1 = mockMvc.perform( MockMvcRequestBuilders
                     .post("/banking/operations/account/details")
                     .header("Authorization","Bearer okdskdskdo")
                     .content(asJsonString(viewAccountDTO))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)).andReturn();
-        });
+        assertNotNull(result1);
     }
     private  String asJsonString( Object obj) {
         try {
