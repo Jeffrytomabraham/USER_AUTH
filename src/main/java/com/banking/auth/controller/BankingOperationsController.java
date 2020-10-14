@@ -110,7 +110,7 @@ public class BankingOperationsController {
 	private ErrorResponse getErrorMessage(String message){
 		ErrorResponse errorResponse = new ErrorResponse();
 		JSONObject jsonObject = new JSONObject(message);
-		JSONObject errorFromApi = jsonObject.getJSONObject("errorResponse");
+		JSONObject errorFromApi = jsonObject.getJSONObject("error");
 		errorResponse.setErrorCode(errorFromApi.getString("errorCode"));
 		errorResponse.setMessage(errorFromApi.getString("message"));
 		return errorResponse;
